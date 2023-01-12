@@ -1,3 +1,12 @@
+# Unvalkyried Heavens
+
+## This is an unofficial fork of Valkyrien Skies by Triode et al.
+
+This is a project aiming to improve compatibility of the mod so it can be better utilized in 1.12 modpacks until Valkyrien Skies 2 graces this version.
+It does not add any new content beyond fixes.
+It will not be updated for any newer Minecraft versions, VS2 is taking care of that.
+
+## The following is preserved from the original repository
 
 # <img src="vs_logo.png" width="48" height="48">alkyrien Skies
 [![CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies.svg?style=svg)](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies)
