@@ -1,14 +1,24 @@
 buildscript {
     repositories {
-        mavenCentral()
+        mavenLocal()
         jcenter()
+        mavenCentral()
         maven {
-            name = "Valkyrien Skies Internal"
-            url = "http://maven.valkyrienskies.org/repository/internal/"
+            name = "MinecraftForge"
+            url = "https://maven.daporkchop.net/"
+        }
+        maven {
+            name = "SpongePowered"
+            url = "https://repo.spongepowered.org/maven/"
+        }
+        maven {
+            url = "https://jitpack.io"
         }
     }
     dependencies {
-        classpath "com.github.GregTechCE:ForgeGradle:7e8e0b4c9d"
+        classpath ("com.anatawa12.forge:ForgeGradle:2.3-1.0.+"){
+            changing = true
+        }
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
@@ -98,11 +108,16 @@ configurations {
 
 repositories {
     mavenCentral()
-    jcenter()
     maven {
-        name = "Valkyrien Skies Internal"
-        url = "http://maven.valkyrienskies.org/repository/internal/"
+        name = "SpongePowered"
+        url = "https://repo.spongepowered.org/maven/"
     }
+    maven {
+        name = "DaPorkchop_"
+        url = "https://maven.daporkchop.net/"
+    }
+    maven { url 'https://jitpack.io' }
+    jcenter()
 }
 
 // This is included here because of this garbage https://github.com/SpongePowered/SpongeForge/blob/stable-7/build.gradle#L40-L52
@@ -136,10 +151,10 @@ dependencies {
     shade "org.valkyrienskies:api:$vsApiVersion"
 
     // VS World and Control, for local testing only, not shaded in
-    deobfCompile("org.valkyrienskies:Valkyrien-Skies-World:1d9df462f15c9125255ea086d7aeb75fe12e5877:all") {
+    compile("org.valkyrienskies:Valkyrien-Skies-World:1d9df462f15c9125255ea086d7aeb75fe12e5877:all") {
         transitive = false
     }
-    deobfCompile("org.valkyrienskies:Valkyrien-Skies-Control:bc55aa179d643fd30d4c49a48a2491633033c5f3:all") {
+    compile("org.valkyrienskies:Valkyrien-Skies-Control:bc55aa179d643fd30d4c49a48a2491633033c5f3:all") {
         transitive = false
     }
 
@@ -241,7 +256,7 @@ build.dependsOn(reobfJar)
 build.dependsOn(reobfShadowJar)
 
 publishing {
-    repositories {
+    /*repositories {
         def ghpUser = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
         def ghpPassword = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
         if (ghpUser != null && ghpPassword != null) {
@@ -265,7 +280,7 @@ publishing {
                 url = "https://maven.daporkchop.net/release/"
             }
         }
-    }
+    }*/
     publications {
         maven(MavenPublication) {
             groupId = "org.valkyrienskies"
@@ -288,17 +303,17 @@ publishing {
 }
 
 //sets additional JVM args for genIntellijRuns
-//task preIntellijRuns {
-//    doFirst {
-//        StreamSupport.stream(configurations.compile.spliterator(), false).filter({
-//            it.name.contains("mixin")
-//        }).findAny().ifPresent({
-//            minecraft.clientJvmArgs += "-javaagent:" + it.absolutePath
-//            minecraft.serverJvmArgs += "-javaagent:" + it.absolutePath
-//        })
-//    }
-//}
-//genIntellijRuns.dependsOn(preIntellijRuns)
+task preIntellijRuns {
+    doFirst {
+        StreamSupport.stream(configurations.compile.spliterator(), false).filter({
+            it.name.contains("mixin")
+        }).findAny().ifPresent({
+            minecraft.clientJvmArgs += "-javaagent:" + it.absolutePath
+            minecraft.serverJvmArgs += "-javaagent:" + it.absolutePath
+        })
+    }
+}
+genIntellijRuns.dependsOn(preIntellijRuns)
 
 // Junit testing
 test {

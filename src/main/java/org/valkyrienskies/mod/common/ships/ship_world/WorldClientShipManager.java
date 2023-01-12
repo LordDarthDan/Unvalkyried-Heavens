@@ -35,7 +35,8 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     private void enforceGameThread() throws CalledFromWrongThreadException {
         if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
-            throw new CalledFromWrongThreadException("Wrong thread calling code: " + Thread.currentThread());
+            //throw new CalledFromWrongThreadException("Wrong thread calling code: " + Thread.currentThread());
+            logger.warn("Wrong thread calling code: " + Thread.currentThread());
         }
     }
 
