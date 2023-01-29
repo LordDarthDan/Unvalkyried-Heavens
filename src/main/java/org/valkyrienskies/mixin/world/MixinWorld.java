@@ -1,5 +1,6 @@
 package org.valkyrienskies.mixin.world;
 
+import com.azul.crs.jar.ZipTools;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
@@ -353,8 +354,10 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 
-
-        IPhysObjectWorld physObjectWorld = ((IHasShipManager) (this)).getManager();
+        IPhysObjectWorld physObjectWorld = null;
+        if (ValkyrienUtils.notInFakeWorldBlacklist(World.class.cast(this))) {
+            physObjectWorld = ((IHasShipManager) (this)).getManager();
+        }
 
         if (physObjectWorld == null) {
             return vanillaTrace;

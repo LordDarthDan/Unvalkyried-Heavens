@@ -37,6 +37,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
@@ -138,6 +139,15 @@ public class ValkyrienUtils {
         }
 
         return worldData;
+    }
+
+    public boolean notInFakeWorldBlacklist(World world) {
+        for (String worldname : VSConfig.fakeDimensionBlacklist) {
+            if (world.toString().contains(worldname)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

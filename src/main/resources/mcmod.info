@@ -3,7 +3,7 @@
     "modid": "valkyrienskies",
     "name": "Valkyrien Skies Core",
     "description": "Minecraft ships with physics!",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "mcversion": "${mcversion}",
     "url": "https://www.curseforge.com/minecraft/mc-mods/unvalkyried-heavens",
     "updateUrl": "https://raw.githubusercontent.com/LordDarthDan/Unvalkyried-Heavens/master/update.json",

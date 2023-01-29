@@ -45,12 +45,16 @@ public abstract class MixinChunk {
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
     private void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
         CallbackInfo callbackInfo) {
-        ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onSetTileEntity(pos, tileEntityIn));
+        if (ValkyrienUtils.notInFakeWorldBlacklist(world)) {
+            ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onSetTileEntity(pos, tileEntityIn));
+        }
     }
 
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
     private void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
-        ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onRemoveTileEntity(pos));
+        if (ValkyrienUtils.notInFakeWorldBlacklist(world)) {
+            ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onRemoveTileEntity(pos));
+        }
     }
 
     /**
@@ -62,10 +66,12 @@ public abstract class MixinChunk {
     @Inject(method = "setBlockState", at = @At("HEAD"))
     private void pre_setBlockState(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
         if (!world.isRemote) {
-            IBlockState oldState = getBlockState(pos);
-            QueryableShipData queryableShipData = QueryableShipData.get(world);
-            Optional<ShipData> shipDataOptional = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
-            shipDataOptional.ifPresent(shipData -> ShipDataMethods.onSetBlockState(shipData, pos, oldState, state));
+            if (ValkyrienUtils.notInFakeWorldBlacklist(world)) {
+                IBlockState oldState = getBlockState(pos);
+                QueryableShipData queryableShipData = QueryableShipData.get(world);
+                Optional<ShipData> shipDataOptional = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
+                shipDataOptional.ifPresent(shipData -> ShipDataMethods.onSetBlockState(shipData, pos, oldState, state));
+            }
         }
     }
 

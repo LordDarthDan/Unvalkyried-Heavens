@@ -81,61 +81,63 @@ public class MixinClientWorld {
         CallbackInfoReturnable<Integer> callbackInfoReturnable) {
 
         final World world = thisAsWorld;
-        try {
-            int i = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
-            int j = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
-            AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2,
-                pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
+        if (ValkyrienUtils.notInFakeWorldBlacklist(world)) {
+            try {
+                int i = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
+                int j = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
+                AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2,
+                        pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
 
-            final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(world).getAllLoadedThreadSafe().stream().filter((physicsObject -> lightBB.intersects(physicsObject.getShipBB()))).collect(Collectors.toList());
+                final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(world).getAllLoadedThreadSafe().stream().filter((physicsObject -> lightBB.intersects(physicsObject.getShipBB()))).collect(Collectors.toList());
 
-            final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+                final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-            for (final PhysicsObject physicsObject : physicsObjectList) {
-                final Vector3dc posInLocal = physicsObject.getShipTransformationManager().getRenderTransform()
-                        .transformPositionNew(JOML.convertTo3d(pos).add(.5, .5, .5), TransformType.GLOBAL_TO_SUBSPACE);
+                for (final PhysicsObject physicsObject : physicsObjectList) {
+                    final Vector3dc posInLocal = physicsObject.getShipTransformationManager().getRenderTransform()
+                            .transformPositionNew(JOML.convertTo3d(pos).add(.5, .5, .5), TransformType.GLOBAL_TO_SUBSPACE);
 
-                final int minX = (int) Math.floor(posInLocal.x());
-                final int minY = (int) Math.floor(posInLocal.y());
-                final int minZ = (int) Math.floor(posInLocal.z());
+                    final int minX = (int) Math.floor(posInLocal.x());
+                    final int minY = (int) Math.floor(posInLocal.y());
+                    final int minZ = (int) Math.floor(posInLocal.z());
 
-                int shipSkyLight = 0;
+                    int shipSkyLight = 0;
 
-                for (int x = minX; x <= minX + 1; x++) {
-                    for (int y = minY; y <= minY + 1; y++) {
-                        for (int z = minZ; z <= minZ + 1; z++) {
-                            mutableBlockPos.setPos(x, y, z);
+                    for (int x = minX; x <= minX + 1; x++) {
+                        for (int y = minY; y <= minY + 1; y++) {
+                            for (int z = minZ; z <= minZ + 1; z++) {
+                                mutableBlockPos.setPos(x, y, z);
 
-                            final IBlockState blockState = world.getBlockState(mutableBlockPos);
+                                final IBlockState blockState = world.getBlockState(mutableBlockPos);
 
-                            // Ignore the light of full blocks
-                            if (blockState.isFullBlock()) {
-                                continue;
+                                // Ignore the light of full blocks
+                                if (blockState.isFullBlock()) {
+                                    continue;
+                                }
+
+                                final int localBlockLight = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, mutableBlockPos);
+                                final int localSkyLight = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, mutableBlockPos);
+
+                                j = Math.max(j, localBlockLight);
+                                shipSkyLight = Math.max(shipSkyLight, localSkyLight);
                             }
-
-                            final int localBlockLight = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, mutableBlockPos);
-                            final int localSkyLight = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, mutableBlockPos);
-
-                            j = Math.max(j, localBlockLight);
-                            shipSkyLight = Math.max(shipSkyLight, localSkyLight);
                         }
+                    }
+
+                    if (i > shipSkyLight) {
+                        i = shipSkyLight;
                     }
                 }
 
-                if (i > shipSkyLight) {
-                    i = shipSkyLight;
+                if (j < lightValue) {
+                    j = lightValue;
                 }
-            }
 
-            if (j < lightValue) {
-                j = lightValue;
+                callbackInfoReturnable.setReturnValue(i << 20 | j << 4);
+            } catch (Exception e) {
+                System.err
+                        .println("Something just went wrong here, getting default light value instead!");
+                e.printStackTrace();
             }
-
-            callbackInfoReturnable.setReturnValue(i << 20 | j << 4);
-        } catch (Exception e) {
-            System.err
-                .println("Something just went wrong here, getting default light value instead!");
-            e.printStackTrace();
         }
     }
 

@@ -120,6 +120,18 @@ public class VSConfig extends VSConfigTemplate {
     })
     public static boolean warnNoModules = true;
 
+    @Name("Fake Dimensions")
+    @Comment({
+        "A compatibility option: dimensions that are incapable of generating the VSWorldDataCapability are to be added to this list",
+        "WARNING: only ever add \"FAKE\" dimensions you cannot enter that are used for inside things within some mods.",
+        "Any \"normal\" dimension should fire the relevant events and create the VSWorldCapability upon generation.",
+        "It is recommended that you remove the dimensions from the config if you aren't using the relevant mods:",
+        "TrackedDummyWorld - GregTech"
+    })
+    public static String[] fakeDimensionBlacklist = {
+            "TrackedDummyWorld"
+    };
+
     @Name("Use Vanilla Explosions")
     @Comment({
         "If CUSTOM, vanilla explosions are replaced with a custom implementation which supports ships blocking",
