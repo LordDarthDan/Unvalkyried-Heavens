@@ -40,6 +40,7 @@ public abstract class MixinRenderManager {
                 double oldLastPosZ = entityIn.lastTickPosZ;
 
                 Vec3d mountPos = mountData.getMountPos();
+                GL11.glPushMatrix();
 
                 mountData.getMountedShip()
                     .getShipRenderer()
@@ -70,6 +71,7 @@ public abstract class MixinRenderManager {
                         .getShipRenderer()
                         .applyInverseTransform(partialTicks);
                 }
+                GL11.glPushMatrix();
 
                 entityIn.posX = oldPosX;
                 entityIn.posY = oldPosY;
