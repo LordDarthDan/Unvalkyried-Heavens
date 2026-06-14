@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 @Mixin(World.class)
 public class MixinClientWorld {
 
-    private final World thisAsWorld = World.class.cast(this);
-
     /**
      * Cache to fix lag from the {@link VSConfig#accurateRain} setting.
      */
@@ -80,7 +78,7 @@ public class MixinClientWorld {
     private void preGetCombinedLight(BlockPos pos, int lightValue,
         CallbackInfoReturnable<Integer> callbackInfoReturnable) {
 
-        final World world = thisAsWorld;
+        final World world = (World) ((Object) this);
         if (ValkyrienUtils.notInFakeWorldBlacklist(world)) {
             try {
                 int i = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
